@@ -151,13 +151,12 @@ public class GroupEditFragment extends EditFragment {
 
   @Override
   protected void update() {
-    actualGroup.changeAttributes(
-        super.getInputDescriptionString(),
-        super.getActiveState(),
-        inputGroupName.getEditText().getText().toString().trim(),
-        super.getInputPhone(),
-        super.getInputEmail(),
-        super.getTags());
+    actualGroup.setDescription(super.getInputDescriptionString());
+    actualGroup.setActive(super.getActiveState());
+    actualGroup.setName(inputGroupName.getEditText().getText().toString().trim());
+    actualGroup.setPhoneNumber(super.getInputPhone());
+    actualGroup.setEmail(super.getInputEmail());
+    actualGroup.setTags(super.getTags());
     if (isNewGroup) {
       facade.newGroup(actualGroup);
     } else {

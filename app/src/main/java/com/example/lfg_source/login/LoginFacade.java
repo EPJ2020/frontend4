@@ -1,5 +1,6 @@
 package com.example.lfg_source.login;
 
+import android.app.Activity;
 import android.util.Patterns;
 
 import androidx.lifecycle.LiveData;
@@ -12,22 +13,25 @@ import com.example.lfg_source.entity.LoginFormState;
 import com.example.lfg_source.service.MyService;
 
 public class LoginFacade extends ViewModel {
+  private Activity activity;
   private MyService service;
+  private static final int PASSWORD_LENGTH = 6;
 
   private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
 
-  protected LoginFacade() {
+  protected LoginFacade(Activity activity) {
+    this.activity = activity;
     service = new MyService(null);
   }
 
   protected void login(String username, String password) {
-    final String url = "http://152.96.56.38:8080/User/login";
+    final String url = activity.getString(R.string.loginConnectString);
     LoginEntity registerData = new LoginEntity(username, password);
     service.sendMessageAutentification(registerData, url);
   }
 
   protected void register(String username, String password) {
-    final String url = "http://152.96.56.38:8080/User/register";
+    final String url = activity.getString(R.string.loginConnectString);
     LoginEntity registerData = new LoginEntity(username, password);
     service.sendMessageAutentification(registerData, url);
   }
@@ -62,6 +66,6 @@ public class LoginFacade extends ViewModel {
   }
 
   private boolean isPasswordValid(String password) {
-    return password != null && password.trim().length() > 5;
+    return password != null && password.trim().length() >= PASSWORD_LENGTH;
   }
 }

@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
   private Toolbar toolbar;
   private Spinner spinner;
-  private Button help;
+  private Button helpButton;
   private MainFacade facade;
   private ShowcaseView showCase;
 
@@ -60,12 +60,11 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     toolbar = findViewById(R.id.toolbar);
     spinner = findViewById(R.id.spinner);
-    help = findViewById(R.id.help_button);
+    helpButton = findViewById(R.id.help_button);
     setupSpinnerListener();
 
-    SharedPreferences preferences = this.getSharedPreferences("LFG", Context.MODE_PRIVATE);
-    preferences.edit().putString("USERTOKEN", null).apply();
-    token = preferences.getString("USERTOKEN", null);
+    SharedPreferences preferences = this.getSharedPreferences(getResources().getString(R.string.app_name), Context.MODE_PRIVATE);
+    token = preferences.getString(getResources().getString(R.string.usertoken), null);
 
     if (token == null) {
       Intent i = new Intent(getApplicationContext(), Login.class);
@@ -80,9 +79,9 @@ public class MainActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == this.requestCode) {
       if (resultCode == Activity.RESULT_OK) {
-        token = data.getStringExtra("usertoken");
+        token = data.getStringExtra(getResources().getString(R.string.usertoken));
         SharedPreferences preferences = this.getSharedPreferences("LFG", Context.MODE_PRIVATE);
-        preferences.edit().putString("USERTOKEN", token).apply();
+        preferences.edit().putString(getResources().getString(R.string.usertoken), token).apply();
         setup();
       }
     }
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
   private void finishSetup() {
     FragmentManager fragmentManager = getSupportFragmentManager();
     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-    help.setOnClickListener(
+    helpButton.setOnClickListener(
         new View.OnClickListener() {
           public void onClick(View v) {
             help1("Da können sie Ihre Rolle auswählen", MainActivity.this, R.id.spinner);
@@ -257,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         new ArrayAdapter<Object>(getApplicationContext(), R.layout.spin_item, spinnerList);
     adapter.setDropDownViewResource(R.layout.spin_dropdown_item);
     spinner.setVisibility(View.VISIBLE);
-    help.setVisibility(View.VISIBLE);
+    helpButton.setVisibility(View.VISIBLE);
     spinner.setAdapter(adapter);
     Fragment fragment = this.getSupportFragmentManager().findFragmentById(R.id.fragment_container);
     if (fragment instanceof HomeFragment) {
@@ -269,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
   public void setNullToolbar(String title) {
     spinner.setVisibility(View.GONE);
-    help.setVisibility(View.GONE);
+    helpButton.setVisibility(View.GONE);
     toolbar.setTitle(title);
     isMatchFragment = false;
   }

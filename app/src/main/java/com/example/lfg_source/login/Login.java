@@ -34,9 +34,17 @@ public class Login extends AppCompatActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    facade = new LoginFacade();
+    facade = new LoginFacade(this);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.login);
+
+    initViewElements();
+    setupObservers();
+    setTextChangeListener();
+    setButtonListeners();
+  }
+
+  private void initViewElements() {
     usernameEditText = findViewById(R.id.username);
     passwordEditText = findViewById(R.id.password);
     loginButton = findViewById(R.id.login);
@@ -44,84 +52,9 @@ public class Login extends AppCompatActivity {
     registrationButton = findViewById(R.id.register2);
     cancelButton = findViewById(R.id.cancelRegistration);
     loadingProgressBar = findViewById(R.id.loading);
+  }
 
-    facade
-        .getLoginFormState()
-        .observe(
-            this,
-            new Observer<LoginFormState>() {
-              @Override
-              public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
-                  return;
-                }
-                loginButton.setEnabled(loginFormState.isDataValid());
-                if (loginFormState.getUsernameError() != null) {
-                  usernameEditText.setError(getString(loginFormState.getUsernameError()));
-                }
-                if (loginFormState.getPasswordError() != null) {
-                  passwordEditText.setError(getString(loginFormState.getPasswordError()));
-                }
-                registrationButton.setEnabled(loginFormState.isDataValid());
-              }
-            });
-
-    facade
-        .getService()
-        .getLoginResult()
-        .observe(
-            this,
-            new Observer<String>() {
-              @Override
-              public void onChanged(@Nullable String loginResult) {
-                if (loginResult == null) {
-                  showLoginFailed();
-                  return;
-                } else {
-                  Intent returnIntent = new Intent();
-                  returnIntent.putExtra("usertoken", loginResult);
-                  setResult(Activity.RESULT_OK, returnIntent);
-                  finish();
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-              }
-            });
-
-    final Activity login = this;
-    facade
-        .getService()
-        .getLoginFailMessage()
-        .observe(
-            this,
-            new Observer<String>() {
-              @Override
-              public void onChanged(String text) {
-                Toast.makeText(login, text, Toast.LENGTH_SHORT).show();
-                loadingProgressBar.setVisibility(View.GONE);
-              }
-            });
-
-    TextWatcher afterTextChangedListener =
-        new TextWatcher() {
-          @Override
-          public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            // ignore
-          }
-
-          @Override
-          public void onTextChanged(CharSequence s, int start, int before, int count) {
-            // ignore
-          }
-
-          @Override
-          public void afterTextChanged(Editable s) {
-            facade.loginDataChanged(
-                usernameEditText.getText().toString(), passwordEditText.getText().toString());
-          }
-        };
-
-    usernameEditText.addTextChangedListener(afterTextChangedListener);
-    passwordEditText.addTextChangedListener(afterTextChangedListener);
+  private void setButtonListeners() {
     passwordEditText.setOnEditorActionListener(
         new TextView.OnEditorActionListener() {
 
@@ -178,8 +111,91 @@ public class Login extends AppCompatActivity {
         });
   }
 
+  private void setTextChangeListener() {
+
+    TextWatcher afterTextChangedListener =
+        new TextWatcher() {
+          @Override
+          public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            // ignore
+          }
+
+          @Override
+          public void onTextChanged(CharSequence s, int start, int before, int count) {
+            // ignore
+          }
+
+          @Override
+          public void afterTextChanged(Editable s) {
+            facade.loginDataChanged(
+                usernameEditText.getText().toString(), passwordEditText.getText().toString());
+          }
+        };
+
+    usernameEditText.addTextChangedListener(afterTextChangedListener);
+    passwordEditText.addTextChangedListener(afterTextChangedListener);
+  }
+
+  private void setupObservers() {
+    facade
+        .getLoginFormState()
+        .observe(
+            this,
+            new Observer<LoginFormState>() {
+              @Override
+              public void onChanged(@Nullable LoginFormState loginFormState) {
+                if (loginFormState == null) {
+                  return;
+                }
+                loginButton.setEnabled(loginFormState.isDataValid());
+                if (loginFormState.getUsernameError() != null) {
+                  usernameEditText.setError(getString(loginFormState.getUsernameError()));
+                }
+                if (loginFormState.getPasswordError() != null) {
+                  passwordEditText.setError(getString(loginFormState.getPasswordError()));
+                }
+                registrationButton.setEnabled(loginFormState.isDataValid());
+              }
+            });
+
+    facade
+        .getService()
+        .getLoginResult()
+        .observe(
+            this,
+            new Observer<String>() {
+              @Override
+              public void onChanged(@Nullable String loginResult) {
+                if (loginResult == null) {
+                  showLoginFailed();
+                  return;
+                } else {
+                  Intent returnIntent = new Intent();
+                  returnIntent.putExtra(getResources().getString(R.string.usertoken), loginResult);
+                  setResult(Activity.RESULT_OK, returnIntent);
+                  finish();
+                }
+                loadingProgressBar.setVisibility(View.GONE);
+              }
+            });
+
+    final Activity login = this;
+    facade
+        .getService()
+        .getLoginFailMessage()
+        .observe(
+            this,
+            new Observer<String>() {
+              @Override
+              public void onChanged(String text) {
+                Toast.makeText(login, text, Toast.LENGTH_SHORT).show();
+                loadingProgressBar.setVisibility(View.GONE);
+              }
+            });
+  }
+
   private void showLoginFailed() {
-    Toast.makeText(getApplicationContext(), "Versuchen Sie es erneut", Toast.LENGTH_SHORT).show();
+    Toast.makeText(getApplicationContext(), getResources().getString(R.string.retry), Toast.LENGTH_SHORT).show();
   }
 
   @Override

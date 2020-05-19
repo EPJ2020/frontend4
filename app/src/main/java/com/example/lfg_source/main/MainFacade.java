@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import androidx.lifecycle.ViewModel;
 
+import com.example.lfg_source.R;
 import com.example.lfg_source.entity.AnswerEntity;
 import com.example.lfg_source.entity.Group;
 import com.example.lfg_source.entity.User;
@@ -15,8 +16,8 @@ public class MainFacade extends ViewModel {
   private String token;
 
   public MainFacade(MainActivity activity) {
-    SharedPreferences preferences = activity.getSharedPreferences("LFG", Context.MODE_PRIVATE);
-    token = preferences.getString("USERTOKEN", null);
+    SharedPreferences preferences = activity.getSharedPreferences(activity.getString(R.string.app_name), Context.MODE_PRIVATE);
+    token = preferences.getString(activity.getString(R.string.usertoken), null);
     service = new MyService(token);
   }
 

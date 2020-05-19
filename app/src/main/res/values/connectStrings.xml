@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="loginConnectString">http://152.96.56.38:8080/User/login</string>
+    <string name="registerConnectString">http://152.96.56.38:8080/User/register</string>
+</resources>

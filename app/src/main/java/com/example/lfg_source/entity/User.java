@@ -126,21 +126,4 @@ public class User {
   public void setGender(String gender) {
     this.gender = gender;
   }
-
-  public void changeAttributes(
-      String description,
-      boolean active,
-      String firstName,
-      String phone,
-      String lastName,
-      String email,
-      ArrayList<String> tags) {
-    this.description = description;
-    this.active = active;
-    this.email = email;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.phone = phone;
-    this.tags = tags;
-  }
 }
